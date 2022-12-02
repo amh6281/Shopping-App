@@ -10,7 +10,8 @@ const FeaturedProducts = ({ type }) => {
     const fetchData = async () => {
       try {
         const res = await axios.get(
-          process.env.REACT_APP_API_URL + "/products?populate=*",
+          process.env.REACT_APP_API_URL +
+            `/products?populate=*&[filters][type][$eq]=${type}`,
           {
             headers: {
               Authorization: "bearer " + process.env.REACT_APP_API_TOKEN,
@@ -28,7 +29,7 @@ const FeaturedProducts = ({ type }) => {
   return (
     <div className="featuredProducts">
       <div className="top">
-        <h1>{type} 상품</h1>
+        {type === "recommend" ? <h1>추천 상품</h1> : <h1>트렌드 상품</h1>}
       </div>
       <div className="bottom">
         {products.map((item) => (
