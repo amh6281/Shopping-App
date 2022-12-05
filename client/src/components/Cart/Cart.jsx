@@ -1,50 +1,46 @@
 import React from "react";
 import "./Cart.scss";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import { useDispatch, useSelector } from "react-redux";
+import { removeItem, resetCart } from "../../redux/cartReducer";
 
 const Cart = () => {
-  const data = [
-    {
-      id: 1,
-      img: "https://images.pexels.com/photos/1972115/pexels-photo-1972115.jpeg?auto=compress&cs=tinysrgb&w=1600",
-      img2: "https://images.pexels.com/photos/1163194/pexels-photo-1163194.jpeg?auto=compress&cs=tinysrgb&w=1600",
-      title: "롱 슬리브 그래픽 티셔츠",
-      desc: "롱 슬리브 그래픽 티셔츠",
-      isNew: true,
-      oldPrice: 24900,
-      price: 13900,
-    },
-    {
-      id: 2,
-      img: "https://images.pexels.com/photos/1759622/pexels-photo-1759622.jpeg?auto=compress&cs=tinysrgb&w=1600",
-      title: "코트",
-      desc: "코트",
-      isNew: true,
-      oldPrice: 24900,
-      price: 13900,
-    },
-  ];
+  const products = useSelector((state) => state.cart.products);
+  const dispatch = useDispatch();
+
+  const totalPrice = () => {
+    let total = 0;
+    products.forEach((item) => (total += item.quantity * item.price));
+    return total;
+  };
 
   return (
     <div className="cart">
       <h1>나의 장바구니</h1>
-      {data?.map((item) => (
+      {products?.map((item) => (
         <div className="item" key={item.id}>
-          <img src={item.img} alt="" />
+          <img src={process.env.REACT_APP_UPLOAD_URL + item.img} alt="" />
           <div className="details">
             <h1>{item.title}</h1>
             <p>{item.desc?.substring(0, 100)}</p>
-            <div className="price">1 x {item.price}</div>
+            <div className="price">
+              {item.quantity} x {new Intl.NumberFormat().format(item.price)}
+            </div>
           </div>
-          <DeleteOutlinedIcon className="delete" />
+          <DeleteOutlinedIcon
+            className="delete"
+            onClick={() => dispatch(removeItem(item.id))}
+          />
         </div>
       ))}
       <div className="total">
         <span>총 주문금액</span>
-        <span>27,800</span>
+        <span>{new Intl.NumberFormat().format(totalPrice())}원</span>
       </div>
       <button>주문하기</button>
-      <span className="reset">장바구니 비우기</span>
+      <span className="reset" onClick={() => dispatch(resetCart())}>
+        장바구니 비우기
+      </span>
     </div>
   );
 };
